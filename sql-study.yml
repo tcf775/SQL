@@ -79,6 +79,14 @@ Resources:
           sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
           sudo dnf install -y git
+
+          sudo su ec2-user
+          cd ~
+          git clone https://github.com/tcf775/SQL.git
+          cd SQL
+          sed -i 's/#admin_password/${admin_email}/g' docker-compose.yml
+          sed -i 's/#admin_password/${admin_password}/g' docker-compose.yml
+          docker compose up -d
       Tags:
         - Key: "Name"
           Value: "SQL-Study-EC2-Instance"
