@@ -29,3 +29,9 @@ order_id,customer_name,product_id,quantity,order_date,total_amount
 28,Globex Inc.,2,6,2024-05-01,900.00
 29,ABC Inc.,3,9,2024-05-15,1080.00
 30,XYZ Corp.,4,3,2024-06-01,450.00
+31,XYZ Corp.,4,4,2024-03-15,600.00
+32,Stark Enterprises,5,5,2024-04-01,400.00
+33,Acme LLC,1,8,2024-04-10,800.00
+34,Globex Inc.,2,6,2024-05-01,900.00
+35,ABC Inc.,3,9,2024-05-15,1080.00
+36,XYZ Corp.,4,3,2024-06-01,450.00
