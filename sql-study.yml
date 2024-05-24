@@ -1,6 +1,14 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: "StudySQLHandsOn on EC2"
 
+Parameters:
+  AdminEmail:
+    Type: String
+    Description: The admin email
+  AdminPassword:
+    Type: String
+    Description: The admin password
+
 Resources:
 # VPC
   SqlStudyVPC:
@@ -80,12 +88,11 @@ Resources:
 
           sudo dnf install -y git
 
-          sudo su ec2-user
           cd ~
           git clone https://github.com/tcf775/SQL.git
           cd SQL
-          sed -i 's/#admin_password/${admin_email}/g' docker-compose.yml
-          sed -i 's/#admin_password/${admin_password}/g' docker-compose.yml
+          sed -i 's/#admin_email/${AdminEmail}/g' docker-compose.yml
+          sed -i 's/#admin_password/${AdminPassword}/g' docker-compose.yml
           docker compose up -d
       Tags:
         - Key: "Name"
