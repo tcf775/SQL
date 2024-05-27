@@ -8,13 +8,20 @@ Parameters:
   AdminPassword:
     Type: String
     Description: The admin password
+  VpcCidrBlock:
+    Type: String
+    Description: The CIDR block for the VPC
+  SubnetCidrBlock:
+    Type: String
+    Description: The CIDR block for the Subnet
+
 
 Resources:
 # VPC
   SqlStudyVPC:
     Type: AWS::EC2::VPC
     Properties:
-      CidrBlock: 10.30.0.0/16
+      CidrBlock: !Ref VpcCidrBlock
       EnableDnsSupport: true
       EnableDnsHostnames: true
       Tags:
@@ -25,7 +32,7 @@ Resources:
     Type: "AWS::EC2::Subnet"
     Properties:
       VpcId: !Ref SqlStudyVPC
-      CidrBlock: 10.30.1.0/24
+      CidrBlock: !Ref SubnetCidrBlock
       MapPublicIpOnLaunch: true
       Tags:
         - Key: "Name"
@@ -75,15 +82,15 @@ Resources:
       SecurityGroupIds:
       - !GetAtt SqlStudySecurityGroup.GroupId
       UserData:
-        Fn::Base64: |
+        Fn::Base64: !Sub |
           #!/bin/bash
           sudo dnf install -y docker
           sudo systemctl enable --now docker
           sudo usermod -aG docker ec2-user
           
-          DOCKER_CONFIG=${DOCKER_CONFIG:-/usr/local/lib/docker}
-          sudo mkdir -p $DOCKER_CONFIG/cli-plugins
-          sudo curl -SL https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
+          DOCKER_CONFIG=${!DOCKER_CONFIG:-/usr/local/lib/docker}
+          sudo mkdir -p ${!DOCKER_CONFIG}/cli-plugins
+          sudo curl -SL https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64 -o ${!DOCKER_CONFIG}/cli-plugins/docker-compose
           sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
           sudo dnf install -y git
@@ -94,6 +101,7 @@ Resources:
           sed -i 's/#admin_email/${AdminEmail}/g' docker-compose.yml
           sed -i 's/#admin_password/${AdminPassword}/g' docker-compose.yml
           docker compose up -d
+
       Tags:
         - Key: "Name"
           Value: "SQL-Study-EC2-Instance"
@@ -131,3 +139,8 @@ Resources:
       Tags:
         - Key: "Name"
           Value: "SQL-Study-SecurityGroup"
+          
+Outputs:
+  InstanceUrl:
+    Description: The URL of the EC2 instance
+    Value: !Sub "http://${SqlStudyEC2Instance.PublicDnsName}:3000"
